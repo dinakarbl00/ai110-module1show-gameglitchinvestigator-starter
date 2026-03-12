@@ -23,9 +23,10 @@ attempt_limit_map = {
 attempt_limit = attempt_limit_map[difficulty]
 
 low, high = get_range_for_difficulty(difficulty)
-
+# FIX: Added High Score tracker using Claude Code Agent — initializes once in session_state, updates on win
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
+st.sidebar.metric("🏆 High Score", st.session_state.get("high_score", 0))
 
 if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
@@ -42,10 +43,15 @@ if "status" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+# High Score feature: Claude Code (Agent) added this across app.py — it initializes
+# high_score once in session_state and updates it whenever the player wins a better score.
+if "high_score" not in st.session_state:
+    st.session_state.high_score = 0
+
 st.subheader("Make a guess")
 
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -68,10 +74,12 @@ with col2:
     new_game = st.button("New Game 🔁")
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
-
+    
+# FIX: Added status reset and difficulty-aware randint — Claude Code identified both bugs in the new_game block
 if new_game:
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.status = "playing"
     st.success("New game started.")
     st.rerun()
 
@@ -108,6 +116,9 @@ if submit:
         if outcome == "Win":
             st.balloons()
             st.session_state.status = "won"
+            if st.session_state.score > st.session_state.high_score:
+                st.session_state.high_score = st.session_state.score
+                st.toast("🏆 New High Score!")
             st.success(
                 f"You won! The secret was {st.session_state.secret}. "
                 f"Final score: {st.session_state.score}"

@@ -1,4 +1,4 @@
-from logic_utils import check_guess, update_score
+from logic_utils import check_guess, update_score, parse_guess
 
 # --- existing tests (fixed to unpack the tuple check_guess returns) ---
 
@@ -68,3 +68,33 @@ def test_update_score_too_high_always_deducts():
 def test_update_score_too_low_always_deducts():
     assert update_score(100, "Too Low", 1) == 95
     assert update_score(100, "Too Low", 2) == 95
+
+# --- edge-case tests for parse_guess ---
+
+def test_parse_guess_non_numeric():
+    # Non-numeric string should fail gracefully, not crash
+    ok, value, err = parse_guess("abc")
+    assert ok == False
+    assert value is None
+    assert err == "That is not a number."
+
+def test_parse_guess_empty_string():
+    # Empty input should prompt the user to enter a guess
+    ok, value, err = parse_guess("")
+    assert ok == False
+    assert value is None
+    assert err == "Enter a guess."
+
+def test_parse_guess_negative_number():
+    # Negative numbers are valid integers — parse_guess should accept them
+    ok, value, err = parse_guess("-5")
+    assert ok == True
+    assert value == -5
+    assert err is None
+
+def test_parse_guess_float_truncates():
+    # Floats like "7.9" should be accepted and truncated to int (7), not rounded
+    ok, value, err = parse_guess("7.9")
+    assert ok == True
+    assert value == 7
+    assert err is None

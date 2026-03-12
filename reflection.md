@@ -39,6 +39,9 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 ## 4. What did you learn about Streamlit and state?
 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+- A: Streamlit reruns the code on every click of the mouse. So everything gets refreshed and goes back to how it was when the site/ webpage opens for the first time. The only thing which records the history or holds the values and variables are things given in session state. Session state does not get refreshed.
+- What change did you make that finally gave the game a stable secret number?
+- A: The fix was wrapping the secret generation inside a guard: `if "secret" not in st.session_state: st.session_state.secret = random.randint(low, high)`. This means the random number is only generated once on the very first load. Every subsequent rerun reads the already-saved value from session_state instead of picking a new one.
 
 ---
 
@@ -46,5 +49,26 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 - What is one habit or strategy from this project that you want to reuse in future labs or projects?
   - This could be a testing habit, a prompting strategy, or a way you used Git.
+- A: For me, that would be to ask AI or prompt it to give test cases/ steps to verify the results after editing and to see if it matches your expectaions.
 - What is one thing you would do differently next time you work with AI on a coding task?
+- A: I would ask AI to generate the reasons and code for appropriate testing and verification of the code changes done.
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+- A: While AI generated code feels mostly correct, it is not very accurate and efficient at first run. I came across a lot of improvements or chages I would have done personally to make the code better or match my standards and expectations.
+
+---
+
+## 6. AI Model Comparison
+
+For the hint bug (the `str()` conversion on even attempts), I compared the output of two AI tools:
+
+**Claude (Claude Code):**
+Claude immediately pinpointed lines 158–161 in `app.py` as the cause, explaining that converting the secret to a string triggered alphabetical comparison inside the `except TypeError` fallback — giving a precise, code-level explanation. It also noted the reversed hint messages as a separate bug in `check_guess`. The fix it suggested (remove the conversion entirely and always pass the integer secret) was correct and clean on the first attempt.
+
+**Original AI-generated code (the starter code author):**
+The original AI embedded the bug intentionally as a challenge — but the way it was written (hiding it inside a `% 2 == 0` branch) made it look like intentional feature code rather than a bug. When I first described the symptom to the original model ("hints are wrong sometimes"), it suggested checking `parse_guess` for type issues, which was a red herring. The actual cause was upstream in how the secret was passed, not in how the guess was parsed.
+
+**Which was more Pythonic?**
+Claude's fix was more Pythonic — it removed unnecessary branching and trusted that `parse_guess` always returns an `int`, leading to simpler, flatter code. The original AI's approach of adding a `try/except TypeError` fallback was over-engineered and masked the real bug.
+
+**Which explanation was easier to understand?**
+Claude's explanation was easier because it cited specific line numbers, explained *why* alphabetical string comparison produces wrong results with a concrete example (`"7" > "50"` is True), and separated the two distinct bugs clearly.
