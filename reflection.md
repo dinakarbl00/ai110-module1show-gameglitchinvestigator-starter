@@ -7,6 +7,7 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 - What did the game look like the first time you ran it?
 - A: The game looks like a guessing game. We have to guess a number between 1 and 100.
 - List at least two concrete bugs you noticed at the start  
+  (for example: "the hints were backwards").
   (for example: "the secret number kept changing" or "the hints were backwards").
 - A: --The hint is mismathced, it says to go higher if theguess is high and to go lower if the guess is low.  --Once you guess correctly, the submit button and hints stop working from the next game onwards.  --The difficulty of the game is messed up, hard level is actually easier than normal level and the new game button does not consider difficulty level at all.
 
@@ -37,9 +38,7 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 
 ## 4. What did you learn about Streamlit and state?
 
-- In your own words, explain why the secret number kept changing in the original app.
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
-- What change did you make that finally gave the game a stable secret number?
 
 ---
 
